@@ -2,39 +2,30 @@ name: Bot Pantau Emas
 
 on:
   schedule:
-    # Menjalankan otomatis setiap hari jam 00:00 UTC (jam 7 pagi WIB)
     - cron: '0 0 * * *'
-  workflow_dispatch: # Supaya muncul tombol "Run workflow" untuk tes manual
+  workflow_dispatch:
 
 jobs:
   eksekusi:
     runs-on: ubuntu-latest
-    
-    # Memberi izin robot untuk menulis file ke dalam repositori
     permissions:
       contents: write
-      
     steps:
-      # 1. Mengambil kode dari repositori kamu
       - name: Ambil Kode
         uses: actions/checkout@v4
 
-      # 2. Menyiapkan lingkungan Node.js (versi terbaru)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3. Menjalankan skrip JavaScript pengambil harga emas
       - name: Jalankan Skrip Update
         run: node update_gold.js
 
-      # 4. Menyimpan file harga_emas.csv kembali ke GitHub
       - name: Simpan Perubahan
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "actions@github.com"
           git add harga_emas.csv
-          # Jika tidak ada perubahan harga, tidak akan error
           git commit -m "Update harga emas harian [skip ci]" || exit 0
           git push
